@@ -15,6 +15,8 @@ namespace ParrallelProj
     {
         [Params(10, 100, 1000, 100_000, 1_000_000)]
         public int Amount { get; set; }
+        [Params(1, 2, 5, 10)]
+        public int ChunkSize { get; set; }
 
         private string _s = string.Empty;
         private StringWorker _sw;
@@ -34,10 +36,16 @@ namespace ParrallelProj
         public Dictionary<char, int> Usual_Way() => _sw.CountUniqueSymbols(_s);
 
         [Benchmark]
-        public Task<ConcurrentDictionary<char, int>> Task_Way() => _sw.CountUniqueSymbolsTask(_s);
+        public ConcurrentDictionary<char, int> Parrallel_Way() => _sw.CountUniqueSymbolsParrallel(_s);
 
         [Benchmark]
-        public ConcurrentDictionary<char, int> Parrallel_Way() => _sw.CountUniqueSymbolsParrallel(_s);
+        public ConcurrentDictionary<char, int> Task_Full_Run() => _sw.CountUniqueSymbolsAllTask(_s).Result;
+
+        [Benchmark]
+        public ConcurrentDictionary<char, int> Task_Chunk_Run() => _sw.CountUniqueSymbolsChunkTask(_s,ChunkSize).Result;
+
+        [Benchmark]
+        public ConcurrentDictionary<char, int> Thread_Chunk_Run() => _sw.CountUniqueSymbolsChunkThread(_s,ChunkSize);
 
 
 
